@@ -6,6 +6,18 @@ const isActive = (history, path) => {
   else return { color: '#ffffff' };
 };
 
+export const signout = next => {
+  if (typeof window !== 'undefined') localStorage.removeItem('jwt');
+  next();
+  return fetch('http://localhost:8080/signout', {
+    method: 'GET'
+  })
+    .then(response => {
+      return response.json();
+    })
+    .catch(error => console.log(error));
+};
+
 const Menu = ({ history }) => (
   <div>
     <ul className="nav nav-tabs bg-primary">
@@ -31,6 +43,18 @@ const Menu = ({ history }) => (
         >
           Sign In
         </Link>
+      </li>
+      <li className="nav-item">
+        <a
+          className="nav-link"
+          style={
+            (isActive(history, '/signout'),
+            { cursor: 'pointer', color: 'white' })
+          }
+          onClick={() => signout(() => history.push('/'))}
+        >
+          Sign Out
+        </a>
       </li>
     </ul>
   </div>
