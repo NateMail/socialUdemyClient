@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 
-class Signup extends Component {
+class Signin extends Component {
   constructor() {
     super();
     this.state = {
-      name: '',
       email: '',
       password: '',
       error: '',
-      open: false
+      redirectToRefer: false
     };
   }
 
@@ -17,32 +17,36 @@ class Signup extends Component {
     this.setState({ [name]: event.target.value });
   };
 
+  authenticate(jwt, next) {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('jwt', JSON.stringify(jwt));
+      next();
+    }
+  }
+
   clickSubmit = event => {
     event.preventDefault();
 
-    const { name, email, password } = this.state;
+    const { email, password } = this.state;
 
     const user = {
-      name,
       email,
       password
     };
     // console.log(user);
-    this.signup(user).then(data => {
-      if (data.error) this.setState({ error: data.error });
-      else
-        this.setState({
-          error: '',
-          name: '',
-          email: '',
-          password: '',
-          open: true
+    this.signin(user).then(data => {
+      if (data.error) {
+        this.setState({ error: data.error });
+      } else {
+        this.authenticate(data, () => {
+          this.setState({ redirectToRefer: true });
         });
+      }
     });
   };
 
-  signup = user => {
-    return fetch('http://localhost:8080/signup', {
+  signin = user => {
+    return fetch('http://localhost:8080/signin', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -57,10 +61,13 @@ class Signup extends Component {
   };
 
   render() {
-    const { name, email, password, error, open } = this.state;
+    const { email, password, error, redirectToRefer } = this.state;
+    if (redirectToRefer) {
+      return <Redirect to="/" />;
+    }
     return (
       <div className="container">
-        <h2 className="mt-5 mb-5">Sign Up</h2>
+        <h2 className="mt-5 mb-5">Sign In</h2>
 
         <div
           className="alert alert-primary"
@@ -69,23 +76,7 @@ class Signup extends Component {
           {error}
         </div>
 
-        <div
-          className="alert alert-info"
-          style={{ display: open ? '' : 'none' }}
-        >
-          New Account successfully created. Please Sign In.
-        </div>
-
         <form>
-          <div className="form-group">
-            <label className="text-muted">Name</label>
-            <input
-              onChange={this.handleChange('name')}
-              type="text"
-              className="form-control"
-              value={name}
-            />
-          </div>
           <div className="form-group">
             <label className="text-muted">Email</label>
             <input
@@ -116,4 +107,4 @@ class Signup extends Component {
   }
 }
 
-export default Signup;
+export default Signin;
