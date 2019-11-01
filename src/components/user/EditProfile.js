@@ -12,7 +12,9 @@ class EditProfile extends Component {
       email: '',
       password: '',
       redirectToProfile: false,
-      error: ''
+      error: '',
+      fileSize: 0,
+      loading: false
     };
   }
 
@@ -65,13 +67,8 @@ class EditProfile extends Component {
 
   clickUpdate = event => {
     event.preventDefault();
+    this.setState({ loading: true });
     if (this.isValid()) {
-      const { name, email, password } = this.state;
-      const user = {
-        name,
-        email,
-        password: password || undefined
-      };
       const userId = this.props.match.params.userId;
       const token = isAuthenticated().token;
 
@@ -130,7 +127,15 @@ class EditProfile extends Component {
   );
 
   render() {
-    const { name, id, email, password, redirectToProfile, error } = this.state;
+    const {
+      name,
+      id,
+      email,
+      password,
+      redirectToProfile,
+      error,
+      loading
+    } = this.state;
 
     if (redirectToProfile) {
       return <Redirect to={`/user/${id}`} />;
@@ -145,6 +150,13 @@ class EditProfile extends Component {
         >
           {error}
         </div>
+        {loading ? (
+          <div className="jumbotron text-center">
+            <h2>Loading...</h2>
+          </div>
+        ) : (
+          ''
+        )}
         {this.editProfileForm(name, email, password)}
       </div>
     );
