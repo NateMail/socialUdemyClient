@@ -41,7 +41,11 @@ class EditProfile extends Component {
   }
 
   isValid = () => {
-    const { name, email, password } = this.state;
+    const { name, email, password, fileSize } = this.state;
+    if (fileSize > 100000) {
+      this.setState({ error: 'File size should be less than 100kb' });
+      return false;
+    }
     if (name.length === 0) {
       this.setState({ error: 'Name is required' });
       return false;
@@ -60,9 +64,11 @@ class EditProfile extends Component {
   };
 
   handleChange = name => event => {
+    this.setState({ error: '' });
     const value = name === 'photo' ? event.target.files[0] : event.target.value;
+    const fileSize = name === 'photo' ? event.target.files[0].size : 0;
     this.userData.set(name, value);
-    this.setState({ [name]: value });
+    this.setState({ [name]: value, fileSize });
   };
 
   clickUpdate = event => {
@@ -145,7 +151,7 @@ class EditProfile extends Component {
       <div className="container">
         <h2 className="mt-5 mb-5">Edit Profile</h2>
         <div
-          className="alert alert-primary"
+          className="alert alert-danger"
           style={{ display: error ? '' : 'none' }}
         >
           {error}

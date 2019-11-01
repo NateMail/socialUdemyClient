@@ -50,7 +50,7 @@ class Signin extends Component {
         <h2 className="mt-5 mb-5">Sign In</h2>
 
         <div
-          className="alert alert-primary"
+          className="alert alert-danger"
           style={{ display: error ? '' : 'none' }}
         >
           {error}
