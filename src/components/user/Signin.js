@@ -55,6 +55,7 @@ class Signin extends Component {
         >
           {error}
         </div>
+
         {loading ? (
           <div className="jumbotron text-center">
             <h2>Loading...</h2>
