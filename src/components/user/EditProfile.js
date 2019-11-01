@@ -149,7 +149,9 @@ class EditProfile extends Component {
     }
 
     const photoUrl = id
-      ? `${process.env.REACT_APP_API_URL}/user/photo/${id}`
+      ? `${
+          process.env.REACT_APP_API_URL
+        }/user/photo/${id}?${new Date().getTime()}`
       : DefaultProfile;
 
     return (
@@ -168,7 +170,12 @@ class EditProfile extends Component {
         ) : (
           ''
         )}
-        <img src={photoUrl} alt={name} />
+        <img
+          src={photoUrl}
+          alt={name}
+          className="img-thumbnail"
+          style={{ height: '200px', width: 'auto' }}
+        />
         {this.editProfileForm(name, email, password)}
       </div>
     );
