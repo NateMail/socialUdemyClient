@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { findPeople } from './apiUser';
+import { findPeople, follow } from './apiUser';
 import DefaultProfile from '../../images/avatar.jpg';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../../auth';
@@ -8,7 +8,9 @@ class FindPeople extends Component {
   constructor() {
     super();
     this.state = {
-      users: []
+      users: [],
+      error: '',
+      open: false
     };
   }
 
@@ -23,6 +25,24 @@ class FindPeople extends Component {
       }
     });
   }
+
+  clickFollow = (person, i) => {
+    const userId = isAuthenticated().user._id;
+    const token = isAuthenticated().token;
+    follow(userId, token, person._id).then(data => {
+      if (data.error) {
+        this.setState({ error: data.error });
+      } else {
+        let toFollow = this.state.users;
+        toFollow.splice(i, 1);
+        this.setState({
+          users: toFollow,
+          open: true,
+          followMessage: `Following ${person.name}`
+        });
+      }
+    });
+  };
 
   renderUsers = users => (
     <div className="row">
@@ -45,6 +65,12 @@ class FindPeople extends Component {
               >
                 View Profile
               </Link>
+              <button
+                onClick={() => this.clickFollow(user, i)}
+                className="btn btn-raised btn-info btn-sm float-right"
+              >
+                Follow
+              </button>
             </div>
           </div>
         );
@@ -53,10 +79,15 @@ class FindPeople extends Component {
   );
 
   render() {
-    const { users } = this.state;
+    const { users, open, followMessage } = this.state;
     return (
       <div className="container">
-        <h2 className="mt-5 mb-5">Users List</h2>
+        <h2 className="mt-5 mb-5">Find People</h2>
+        {open && (
+          <div className="alert alert-success">
+            <p>{followMessage}</p>
+          </div>
+        )}
         {this.renderUsers(users)}
       </div>
     );
