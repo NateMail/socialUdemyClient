@@ -12,3 +12,13 @@ export const create = (userId, token, post) => {
     })
     .catch(error => console.log(error));
 };
+
+export const list = () => {
+  return fetch(`${process.env.REACT_APP_API_URL}/posts`, {
+    method: 'GET'
+  })
+    .then(response => {
+      return response.json();
+    })
+    .catch(error => console.log(error));
+};
