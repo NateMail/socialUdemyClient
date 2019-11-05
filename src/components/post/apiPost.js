@@ -62,3 +62,18 @@ export const remove = (postId, token) => {
     })
     .catch(error => console.log(error));
 };
+
+export const update = (postId, token, post) => {
+  return fetch(`${process.env.REACT_APP_API_URL}/post/${postId}`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: post
+  })
+    .then(response => {
+      return response.json();
+    })
+    .catch(error => console.log(error));
+};
