@@ -25,7 +25,7 @@ class Posts extends Component {
     return (
       <div className="row">
         {posts.map((post, i) => {
-          const postId = post.postedBy ? `/user/${post.postedBy._id}` : '';
+          const posterId = post.postedBy ? `/user/${post.postedBy._id}` : '';
           const posterName = post.postedBy ? post.postedBy.name : ' Unknown';
 
           return (
@@ -42,7 +42,7 @@ class Posts extends Component {
                 <p className="card-text">{post.body.substring(0, 100)}</p>
                 <br />
                 <p className="font-italic mark">
-                  Posted by <Link to={`${postId}`}>{posterName} </Link>
+                  Posted by <Link to={`${posterId}`}>{posterName} </Link>
                   on {new Date(post.created).toDateString()}
                 </p>
                 <Link
