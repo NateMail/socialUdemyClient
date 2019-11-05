@@ -28,8 +28,8 @@ class Users extends Component {
           <div className="card col-md-4" key={i}>
             <img
               src={`${process.env.REACT_APP_API_URL}/user/photo/${user._id}`}
-              onError={i => (i.target.src = `${DefaultProfile}`)}
               alt={user.name}
+              onError={i => (i.target.src = `${DefaultProfile}`)}
               className="img-thumbnail"
               style={{ height: '200px', width: 'auto' }}
             />
