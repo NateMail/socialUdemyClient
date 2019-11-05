@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { singlePost, update } from './apiPost';
 import { isAuthenticated } from '../../auth';
 import { Redirect } from 'react-router-dom';
+import DefaultPost from '../../images/boston.jpg';
 
 class EditPost extends Component {
   constructor() {
@@ -11,6 +12,7 @@ class EditPost extends Component {
       title: '',
       body: '',
       redirectToProfile: false,
+      error: '',
       fileSize: 0,
       loading: false
     };
@@ -22,7 +24,7 @@ class EditPost extends Component {
         this.setState({ redirectToProfile: true });
       } else {
         this.setState({
-          id: data._id,
+          id: data.postedBy._id,
           title: data.title,
           body: data.body,
           error: ''
@@ -39,7 +41,7 @@ class EditPost extends Component {
 
   isValid = () => {
     const { title, body, fileSize } = this.state;
-    if (fileSize > 100000) {
+    if (fileSize > 1000000) {
       this.setState({
         error: 'File size should be less than 100kb',
         loading: false
@@ -50,13 +52,13 @@ class EditPost extends Component {
       this.setState({ error: 'All fields are required', loading: false });
       return false;
     }
-
     return true;
   };
 
   handleChange = name => event => {
     this.setState({ error: '' });
     const value = name === 'photo' ? event.target.files[0] : event.target.value;
+
     const fileSize = name === 'photo' ? event.target.files[0].size : 0;
     this.postData.set(name, value);
     this.setState({ [name]: value, fileSize });
@@ -65,8 +67,9 @@ class EditPost extends Component {
   clickSubmit = event => {
     event.preventDefault();
     this.setState({ loading: true });
+
     if (this.isValid()) {
-      const postId = this.state.id;
+      const postId = this.props.match.params.postId;
       const token = isAuthenticated().token;
 
       update(postId, token, this.postData).then(data => {
@@ -76,7 +79,6 @@ class EditPost extends Component {
             loading: false,
             title: '',
             body: '',
-            photo: '',
             redirectToProfile: true
           });
         }
@@ -87,7 +89,7 @@ class EditPost extends Component {
   editPostForm = (title, body) => (
     <form>
       <div className="form-group">
-        <label className="text-muted">Picture</label>
+        <label className="text-muted">Post Photo</label>
         <input
           onChange={this.handleChange('photo')}
           type="file"
@@ -104,6 +106,7 @@ class EditPost extends Component {
           value={title}
         />
       </div>
+
       <div className="form-group">
         <label className="text-muted">Body</label>
         <textarea
@@ -113,6 +116,7 @@ class EditPost extends Component {
           value={body}
         />
       </div>
+
       <button onClick={this.clickSubmit} className="btn btn-raised btn-primary">
         Update Post
       </button>
@@ -120,15 +124,45 @@ class EditPost extends Component {
   );
 
   render() {
-    const { title, body, redirectToProfile } = this.state;
+    const { id, title, body, redirectToProfile, error, loading } = this.state;
 
     if (redirectToProfile) {
       return <Redirect to={`/user/${isAuthenticated().user._id}`} />;
     }
+
     return (
       <div className="container">
         <h2 className="mt-5 mb-5">{title}</h2>
-        {this.editPostForm(title, body)}
+
+        <div
+          className="alert alert-danger"
+          style={{ display: error ? '' : 'none' }}
+        >
+          {error}
+        </div>
+
+        {loading ? (
+          <div className="jumbotron text-center">
+            <h2>Loading...</h2>
+          </div>
+        ) : (
+          ''
+        )}
+
+        <img
+          style={{ height: '200px', width: 'auto' }}
+          className="img-thumbnail"
+          src={`${
+            process.env.REACT_APP_API_URL
+          }/post/photo/${id}?${new Date().getTime()}`}
+          onError={i => (i.target.src = `${DefaultPost}`)}
+          alt={title}
+        />
+
+        {isAuthenticated().user.role === 'admin' &&
+          this.editPostForm(title, body)}
+
+        {isAuthenticated().user._id === id && this.editPostForm(title, body)}
       </div>
     );
   }
