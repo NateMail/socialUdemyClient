@@ -9,11 +9,12 @@ class SinglePost extends Component {
     post: '',
     redirectToHome: false,
     like: false,
-    likes: 0
+    likes: 0,
+    redirectToSignIn: false
   };
 
   checkLike = likes => {
-    const userId = isAuthenticated().user._id;
+    const userId = isAuthenticated() && isAuthenticated().user._id;
     let match = likes.indexOf(userId) !== -1;
     return match;
   };
@@ -34,6 +35,12 @@ class SinglePost extends Component {
   };
 
   likeToggle = () => {
+    if (!isAuthenticated()) {
+      this.setState({
+        redirectToSignIn: true
+      });
+      return false;
+    }
     let callApi = this.state.like ? unlike : like;
     const userId = isAuthenticated().user._id;
     const postId = this.state.post._id;
@@ -137,10 +144,13 @@ class SinglePost extends Component {
   };
 
   render() {
-    if (this.state.redirectToHome) {
+    const { post, redirectToHome, redirectToSignIn } = this.state;
+
+    if (redirectToHome) {
       return <Redirect to={'/'} />;
+    } else if (redirectToSignIn) {
+      return <Redirect to={'/signin'} />;
     }
-    const { post } = this.state;
     return (
       <div className="container">
         <h2 className="display-2 mt-5 mb-5">{post.title}</h2>
