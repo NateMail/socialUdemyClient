@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { singlePost, remove, like, unlike } from './apiPost';
+import Comment from './Comment';
 import { Link, Redirect } from 'react-router-dom';
 import DefaultPost from '../../images/boston.jpg';
 import { isAuthenticated } from '../../auth';
@@ -10,7 +11,8 @@ class SinglePost extends Component {
     redirectToHome: false,
     like: false,
     likes: 0,
-    redirectToSignIn: false
+    redirectToSignIn: false,
+    comments: []
   };
 
   checkLike = likes => {
@@ -32,6 +34,10 @@ class SinglePost extends Component {
         });
       }
     });
+  };
+
+  updateComments = comments => {
+    this.setState({ comments });
   };
 
   likeToggle = () => {
@@ -144,7 +150,7 @@ class SinglePost extends Component {
   };
 
   render() {
-    const { post, redirectToHome, redirectToSignIn } = this.state;
+    const { post, redirectToHome, redirectToSignIn, comments } = this.state;
 
     if (redirectToHome) {
       return <Redirect to={'/'} />;
@@ -161,6 +167,12 @@ class SinglePost extends Component {
         ) : (
           this.renderPost(post)
         )}
+
+        <Comment
+          postId={post._id}
+          comments={comments}
+          updateComments={this.updateComments}
+        />
       </div>
     );
   }
