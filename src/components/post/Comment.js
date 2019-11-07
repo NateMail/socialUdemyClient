@@ -41,13 +41,17 @@ class Comment extends Component {
             <input
               type="text"
               onChange={this.handleChange}
+              value={this.state.text}
               className="form-control"
+              placeholder="Leave a comment..."
             />
+            <button className="btn btn-raised btn-success mt-2">
+              Post Comment
+            </button>
           </div>
         </form>
-        {JSON.stringify(comments)}
-        <hr />
-        <div className="col-md-8 col-md-offset-2">
+
+        <div className="col-md-12">
           <h3 className="text-primary">{comments.length} Comments</h3>
           <hr />
           {comments.map((comment, i) => {
@@ -70,6 +74,14 @@ class Comment extends Component {
                   </Link>
                   <div>
                     <p className="lead">{comment.text}</p>
+
+                    <p className="font-italic mark">
+                      Posted by{' '}
+                      <Link to={`/user/${comment.postedBy._id}`}>
+                        {comment.postedBy.name}{' '}
+                      </Link>
+                      on {new Date(comment.created).toDateString()}
+                    </p>
                   </div>
                 </div>
               </div>
