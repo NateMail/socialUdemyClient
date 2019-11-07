@@ -30,7 +30,8 @@ class SinglePost extends Component {
         this.setState({
           post: data,
           likes: data.likes.length,
-          like: this.checkLike(data.likes)
+          like: this.checkLike(data.likes),
+          comments: data.comments
         });
       }
     });
